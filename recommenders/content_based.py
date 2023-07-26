@@ -62,17 +62,19 @@ def data_preprocessing(subset_size):
 
     """
     # Split genre data into individual words.
-    imdb_data['title_cast'] = imdb_data['title_cast'].str.replace('|', ' ')
+    imdb_data['title_cast'] = imdb_data['title_cast'].str.replace('|', ',')
     imdb_data['plot_keywords'] = imdb_data['plot_keywords'].str.replace('|', ' ')
     movies['genres'] = movies['genres'].str.replace('|', ' ')
 
     temp = pd.merge(movies,imdb_data, on = 'movieId',how = 'left')
     data = pd.merge(temp,links, on = 'movieId',how = 'left')
 
-    selected_columns = [ 'title', 'genres','title_cast','director','runtime','budget','plot_keywords','imdbId','tmdbId']
+    # selected_columns = [ 'title', 'genres','title_cast','director','runtime','budget','plot_keywords','imdbId','tmdbId']
+    selected_columns = [ 'title', 'genres','title_cast','director']
     data['features'] = data[selected_columns].apply(lambda x: ' '.join(x.dropna().astype(str)), axis=1)
     data = data[:subset_size]
     return data
+
 
 
 
@@ -97,7 +99,7 @@ def content_model(movie_list,top_n=10):
     """
     # Initializing the empty list of recommended movies
     recommended_movies = []
-    data = data_preprocessing(17000)
+    data = data_preprocessing(27000)
     # Instantiating and generating the count matrix
     count_vec = CountVectorizer()
     count_matrix = count_vec.fit_transform(data['features']) 

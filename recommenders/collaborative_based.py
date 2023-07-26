@@ -194,7 +194,7 @@ ratings_df = pd.read_csv('resources/data/ratings.csv')
 ratings_df.drop(['timestamp'], axis=1,inplace=True)
 
 # We make use of an SVD model trained on a subset of the MovieLens 10k dataset.
-model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
+model=pickle.load(open('resources/models/algo.pkl', 'rb'))
 
 def prediction_item(item_id):
     """Map a given favourite movie to users within the
@@ -244,7 +244,7 @@ def pred_movies(movie_list):
         predictions = prediction_item(item_id = i)
         predictions.sort(key=lambda x: x.est, reverse=True)
         # Take the top 10 user id's from each movie with highest rankings
-        for pred in predictions[:10]:
+        for pred in predictions[:100]:
             id_store.append(pred.uid)
     # Return a list of user id's
     return id_store
@@ -271,6 +271,7 @@ def collab_model(movie_list,top_n=10):
 
     indices = pd.Series(movies_df['title'])
     movie_ids = pred_movies(movie_list)
+    
     df_init_users = ratings_df[ratings_df['userId']==movie_ids[0]]
     for i in movie_ids :
         # df_init_users=df_init_users.append(ratings_df[ratings_df['userId']==i])
@@ -288,6 +289,7 @@ def collab_model(movie_list,top_n=10):
     score_series_1 = pd.Series(rank_1).sort_values(ascending = False)
     score_series_2 = pd.Series(rank_2).sort_values(ascending = False)
     score_series_3 = pd.Series(rank_3).sort_values(ascending = False)
+    
      # Appending the names of movies
     # listings = score_series_1.append(score_series_1).append(score_series_3).sort_values(ascending = False)
     listings = pd.concat([score_series_1,score_series_2,score_series_3])
